@@ -1,4 +1,3 @@
-
 const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
 const { createRateLimit } = require('../utils/helpers');
@@ -24,11 +23,12 @@ const authLimiter = rateLimit({
   skipSuccessfulRequests: true,
 });
 
-// Speed limiter (slow down requests)
+// Speed limiter (slow down requests) - FIX: add validate option to silence warning
 const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
   delayAfter: 50, // allow 50 requests per windowMs without delay
-  delayMs: 500 // add 500ms delay per request after delayAfter
+  delayMs: 500, // add 500ms delay per request after delayAfter
+  validate: { delayMs: false } // <-- Ajout pour désactiver le warning
 });
 
 // Custom rate limiter for uploads
