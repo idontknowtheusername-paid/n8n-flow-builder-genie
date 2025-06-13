@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, RefreshCw, AlertTriangle } from 'lucide-react';
 import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,11 +13,15 @@ const ApiTest = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [listings, setListings] = useState<any[]>([]);
   const [isTestingEndpoints, setIsTestingEndpoints] = useState(false);
+  const [errorDetails, setErrorDetails] = useState<string>('');
   const { toast } = useToast();
 
   const testHealthCheck = async () => {
     try {
       setApiStatus('loading');
+      setErrorDetails('');
+      console.log('Testing API connection to:', import.meta.env.VITE_API_URL || 'https://backend-benome-marketplace.onrender.com/api');
+      
       const response = await apiService.healthCheck();
       setHealthData(response);
       setApiStatus('success');
@@ -25,12 +29,21 @@ const ApiTest = () => {
         title: "API Connectée",
         description: "Le backend est accessible et fonctionne correctement.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Health check failed:', error);
       setApiStatus('error');
+      
+      let errorMessage = "Impossible de se connecter au backend.";
+      if (error.message.includes('Load failed')) {
+        errorMessage = "Erreur de réseau - Le serveur backend pourrait être en cours de démarrage ou indisponible.";
+        setErrorDetails("Le backend sur Render peut prendre jusqu'à 30 secondes pour démarrer s'il était en veille.");
+      } else {
+        setErrorDetails(error.message);
+      }
+      
       toast({
         title: "Erreur de connexion",
-        description: "Impossible de se connecter au backend. Vérifiez que le serveur est démarré.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -109,11 +122,33 @@ const ApiTest = () => {
             <span>Statut de connexion:</span>
             {getStatusBadge()}
           </div>
+
+          <div className="bg-muted p-4 rounded-lg">
+            <h4 className="font-semibold mb-2">Configuration API:</h4>
+            <p className="text-sm"><strong>URL Backend:</strong> {import.meta.env.VITE_API_URL || 'https://backend-benome-marketplace.onrender.com/api'}</p>
+            <p className="text-sm"><strong>Environment:</strong> {import.meta.env.MODE}</p>
+          </div>
+
+          {errorDetails && (
+            <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="h-4 w-4 text-red-500" />
+                <h4 className="font-semibold text-red-700">Détails de l'erreur:</h4>
+              </div>
+              <p className="text-sm text-red-600">{errorDetails}</p>
+              {errorDetails.includes('Load failed') && (
+                <p className="text-xs text-red-500 mt-2">
+                  💡 Conseil: Les services Render gratuits se mettent en veille après inactivité. 
+                  Le premier appel peut prendre 30 secondes pour réveiller le serveur.
+                </p>
+              )}
+            </div>
+          )}
           
           {healthData && (
-            <div className="bg-muted p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">Informations du serveur:</h4>
-              <ul className="space-y-1 text-sm">
+            <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-green-700">Informations du serveur:</h4>
+              <ul className="space-y-1 text-sm text-green-600">
                 <li><strong>Status:</strong> {healthData.status}</li>
                 <li><strong>Environment:</strong> {healthData.environment}</li>
                 <li><strong>Version:</strong> {healthData.version}</li>
