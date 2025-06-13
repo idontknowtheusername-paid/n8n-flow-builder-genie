@@ -1,13 +1,27 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { AuthProvider } from '@/hooks/useAuth';
+import ApiTest from '@/components/ApiTest';
+import LoginForm from '@/components/LoginForm';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <AuthProvider>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-4">Benome Marketplace</h1>
+            <p className="text-xl text-gray-600 mb-8">
+              Test de connexion avec l'API Backend
+            </p>
+          </div>
+          
+          <div className="max-w-4xl mx-auto space-y-8">
+            <ApiTest />
+            <LoginForm />
+          </div>
+        </div>
       </div>
-    </div>
+    </AuthProvider>
   );
 };
 
