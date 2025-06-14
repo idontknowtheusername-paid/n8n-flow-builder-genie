@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiService } from '@/services/api';
 
@@ -8,6 +7,12 @@ interface User {
   firstName: string;
   lastName: string;
   roles?: string[];
+  phone_number?: string;
+  kyc_status?: 'NOT_VERIFIED' | 'PENDING' | 'VERIFIED';
+  created_at?: string;
+  preferred_language?: string;
+  currency?: string;
+  address?: string | object;
 }
 
 interface AuthContextType {
