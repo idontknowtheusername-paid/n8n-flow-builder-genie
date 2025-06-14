@@ -1,4 +1,3 @@
-
 const db = require('../config/database');
 
 const migrations = [
@@ -191,21 +190,20 @@ const migrations = [
 async function runMigrations() {
   try {
     console.log('Running database migrations...');
-    
     for (const migration of migrations) {
       await db.query(migration);
     }
-    
     console.log('Migrations completed successfully!');
-    process.exit(0);
   } catch (error) {
     console.error('Migration error:', error);
-    process.exit(1);
+    throw error;
   }
 }
 
 if (require.main === module) {
-  runMigrations();
+  runMigrations()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
 }
 
 module.exports = { runMigrations };
