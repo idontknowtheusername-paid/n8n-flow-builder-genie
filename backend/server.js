@@ -129,13 +129,13 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-// Correction ici : importer runMigrations au lieu de migrate
-const { runMigrations } = require('./migrations/migrate');
+// Désactivation des migrations automatiques
+// const { runMigrations } = require('./migrations/migrate');
 
 (async () => {
   try {
-    await runMigrations();
-    console.log('✅ Migrations exécutées avec succès.');
+    // await runMigrations(); // <-- Ligne commentée, migrations désactivées
+    console.log('✅ Migrations désactivées (à faire manuellement si besoin).');
   } catch (err) {
     console.error('❌ Erreur lors des migrations:', err);
     // Tu peux choisir de process.exit(1) ici si tu veux stopper le serveur en cas d'échec
